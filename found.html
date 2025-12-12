@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>You Found a Yellow Camera – The Yellow Camera Project</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="You found a Yellow Camera. Yellow cameras that tell your story. Take it. Film your world. Pass it on. Upload your footage here.">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo-block">
+      <img src="assets/icon-camera-pin.png" alt="Yellow Camera Project logo" class="logo-icon">
+      <div class="logo-text">
+        <span class="logo-title">The Yellow Camera Project</span>
+        <span class="logo-tagline">Yellow cameras that tell your story.</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="found-main">
+    <!-- HERO / TALKING HEAD SECTION -->
+    <section class="found-hero">
+      <div class="found-hero-inner">
+        <div class="found-hero-text">
+          <p class="eyebrow">Step one: watch this short intro</p>
+          <h1>You found a Yellow Camera.</h1>
+          <p class="hero-subtitle">
+            Take it. Film your world. Pass it on.<br>
+            This camera travels from stranger to stranger around the world. Each person films a small slice of their real life, 
+            uploads it here, then passes the camera on.
+          </p>
+        </div>
+
+        <div class="talking-head">
+          <div class="video-frame">
+            <video
+              id="yellowIntroVideo"
+              playsinline
+              controls
+              preload="auto"
+              poster="assets/world-map-banner.png"
+            >
+              <source src="assets/yellow-intro-en.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+
+          <button class="video-trigger-btn" id="introPlayBtn" type="button">
+            ▶ Click to get started
+          </button>
+
+          <p class="talking-head-caption">
+            Tap “Click to get started” to hear how this works, then upload your clip and pass the camera on.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEPS STRIP -->
+    <section class="found-steps">
+      <div class="found-steps-inner">
+        <h2>How it works</h2>
+        <div class="step-grid">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <h3>Film with the camera</h3>
+            <p>
+              Press the <strong>top button</strong> once to start recording, and again to stop. 
+              Show us something that feels real to you right now — a view you love, a weird little moment,
+              something joyful or heavy, or the kind of scene you’d tell a friend about later.
+              <strong>Please don’t do anything dangerous, illegal, or that could hurt you or someone else.</strong>
+            </p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <h3>Plug it in & copy your clip</h3>
+            <p>
+              Use the Yellow Camera’s <strong>built-in cable or port</strong> to connect it to your phone or laptop. 
+              Your device should see it like a USB drive. Open it, find the video you just recorded, and copy it to your device.
+            </p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <h3>Upload here, then pass it on</h3>
+            <p>
+              Upload your clip using the form below. If you can, give the camera a quick charge, then hand it to a stranger 
+              and tell them to scan the QR on the back to join the world’s story.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP-BY-STEP VIDEO SECTION -->
+    <section class="found-how-video">
+      <div class="found-how-video-inner">
+        <h2>Watch the step-by-step</h2>
+        <p class="upload-intro">
+          Prefer to see it instead of reading? This short video walks you through recording, copying, 
+          uploading, and resetting the camera for the next stranger.
+        </p>
+        <div class="video-frame">
+          <video
+            id="yellowHowVideo"
+            controls
+            playsinline
+            preload="none"
+            poster="assets/world-map-banner.png"
+          >
+            <source src="assets/yellow-get-started-en.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+
+        <button class="video-trigger-btn" id="howPlayBtn" type="button">
+          ▶ Click for instructions
+        </button>
+      </div>
+    </section>
+
+    <!-- UPLOAD FORM SECTION -->
+    <section class="upload-section">
+      <div class="upload-inner">
+        <h2>Upload your footage</h2>
+        <p class="upload-intro">
+          This page is only for footage recorded on a physical <strong>Yellow Camera</strong>. 
+          Please upload the original file directly from the camera (without renaming or editing it first). 
+          You won’t see other people’s footage here&mdash;finished episodes will be published on YouTube at 
+          <strong>@yellowcameraproject</strong>.
+        </p>
+
+        <!-- JS-handled form -> Netlify Function -->
+        <form id="yellow-camera-upload-form" enctype="multipart/form-data" class="upload-card">
+          <div class="form-row">
+            <label for="camera-id">Which camera did you use?</label>
+            <select id="camera-id" name="camera_id" required>
+              <option value="">Select camera</option>
+              <option value="Y-01 Echo">Y-01 – Echo</option>
+              <option value="Y-02 Midnight">Y-02 – Midnight</option>
+              <option value="Y-03 Nomad">Y-03 – Nomad</option>
+              <option value="Other / not sure">Other / not sure</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label for="camera-code">Camera code (printed on the camera)</label>
+            <input
+              type="text"
+              id="camera-code"
+              name="camera_code"
+              placeholder="5-letter code on the camera body"
+              required
+            >
+            <p class="field-hint">
+              This code helps us confirm that your upload is from a real Yellow Camera. 
+              Please don’t share it publicly.
+            </p>
+          </div>
+
+          <div class="form-row">
+            <label for="location">Where did you film? (City, Country)</label>
+            <input type="text" id="location" name="location" placeholder="Memphis, USA" required>
+          </div>
+
+          <div class="form-row">
+            <label for="date-filmed">When did you film? (approximate is okay)</label>
+            <input type="date" id="date-filmed" name="date_filmed">
+          </div>
+
+          <div class="form-row">
+            <label for="name">First name or nickname (optional)</label>
+            <input type="text" id="name" name="name" placeholder="Just a nickname is fine">
+          </div>
+
+          <div class="form-row">
+            <label for="email">Email (optional, for credit or follow-up)</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com">
+          </div>
+
+          <div class="form-row">
+            <label for="files">Upload your video file(s)</label>
+            <input type="file" id="files" name="videoFile" accept="video/*" multiple required>
+            <p class="field-hint">
+              Please upload the original video files straight from the Yellow Camera, without renaming or editing them.
+              Our system uses the file details to help confirm that the footage really came from this camera.
+            </p>
+          </div>
+
+          <div class="form-row">
+            <label for="link">Or paste a share link (optional)</label>
+            <input type="url" id="link" name="share_link" placeholder="https://...">
+          </div>
+
+          <div class="form-row checkbox-row">
+            <label class="checkbox-label">
+              <input type="checkbox" name="consent" required>
+              <span>I agree that The Yellow Camera Project can use this footage in videos, social media, and other related projects.</span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn-primary" id="uploadSubmitBtn">Send my footage</button>
+
+          <p class="upload-note">
+            After you submit, please wait for the files to finish uploading before closing this page.
+          </p>
+
+          <!-- Status / thank-you / error messages -->
+          <p id="upload-status" class="upload-status" aria-live="polite"></p>
+        </form>
+
+        <!-- WHAT HAPPENS SECTION -->
+        <div class="what-happens">
+          <h3>What happens to your clip?</h3>
+          <p>
+            We review every submission by hand. Some clips will be used in episodes on YouTube and social media,
+            some may appear later in longer documentaries or art projects, and some may stay in the private archive.
+          </p>
+          <p>
+            By uploading, you’re telling us you’re okay with your footage being used in those ways. 
+            If you want to stay anonymous, don’t say your full name on camera and just give us a nickname in the form.
+          </p>
+          <p>
+            Every clip is one tiny piece of the world’s story, told by the people who happen to catch this camera.
+          </p>
+        </div>
+
+        <!-- BONUS HELP SECTION -->
+        <div class="bonus-reset">
+          <h3>Bonus: reset the camera for the next stranger</h3>
+          <p>
+            Once your upload is finished, you can help the next person by clearing the SD card and giving the battery a little charge.
+          </p>
+          <ol>
+            <li>Make sure your clips are fully uploaded here.</li>
+            <li>
+              If you see other people’s videos still on the camera from before you, please upload those too if you can — 
+              they might not have had good internet.
+            </li>
+            <li>On the camera, open the settings menu and choose <strong>Delete &gt; All files on SD</strong>.</li>
+            <li>If possible, plug the camera in for a while so it’s ready for the next storyteller.</li>
+          </ol>
+          <p>
+            Then pass the camera to someone you don’t know and tell them to scan the QR on the back to join the project.
+          </p>
+        </div>
+
+        <!-- FAQ: PHONE VIDEO UPLOADS -->
+        <div class="upload-faq">
+          <h3>Can I upload a video I shot on my phone?</h3>
+          <p>
+            Not on this page. This upload form is only for footage recorded on a physical Yellow Camera.
+            If you found one, please use the cable on the camera to copy the original files and upload them here.
+          </p>
+          <p>
+            If you haven’t found a Yellow Camera yet but want to follow the journeys, you can watch episodes on 
+            YouTube and social media at <strong>@yellowcameraproject</strong>.
+          </p>
+        </div>
+
+        <!-- DAMAGED CAMERA SECTION -->
+        <div class="damaged-camera">
+          <h3>Camera damaged or not working?</h3>
+          <p>
+            If the Yellow Camera you found is badly damaged, cracked, or won’t power on,
+            please don’t throw it away. You can help keep the project alive.
+          </p>
+          <ol>
+            <li>Take a photo of the camera, including the camera ID if you can.</li>
+            <li>
+              Email us at 
+              <a href="mailto:theyellowcameraproject@gmail.com?subject=Damaged%20Yellow%20Camera">
+                theyellowcameraproject@gmail.com
+              </a> 
+              with the subject line 
+              <strong>"Damaged Yellow Camera"</strong>.
+            </li>
+            <li>
+              We’ll reply with mailing instructions so the camera can be repaired or
+              recycled and sent back into the world.
+            </li>
+          </ol>
+          <p>
+            Thank you for helping keep the Yellow Camera story going.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; <span id="year"></span> The Yellow Camera Project. All rights reserved.</p>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    document.addEventListener('DOMContentLoaded', function () {
+      var introVideo = document.getElementById('yellowIntroVideo');
+      var howVideo   = document.getElementById('yellowHowVideo');
+      var introBtn   = document.getElementById('introPlayBtn');
+      var howBtn     = document.getElementById('howPlayBtn');
+
+      if (introVideo) {
+        introVideo.preload = 'auto';
+        introVideo.volume = 0.5;
+
+        // When intro starts, begin preloading the how-to video
+        introVideo.addEventListener('play', function () {
+          if (howVideo) {
+            howVideo.preload = 'auto';
+            try { howVideo.load(); } catch (e) {}
+          }
+        });
+      }
+
+      if (introVideo && introBtn) {
+        introBtn.addEventListener('click', function () {
+          introVideo.volume = 0.5;
+          introVideo.play().catch(function (err) {
+            console.error('Intro video play failed:', err);
+          });
+        });
+      }
+
+      if (howVideo && howBtn) {
+        howBtn.addEventListener('click', function () {
+          howVideo.volume = 0.5;
+          howVideo.play().catch(function (err) {
+            console.error('How-to video play failed:', err);
+          });
+        });
+      }
+
+      // ---------- Upload form -> Netlify Function via fetch ----------
+      const FUNCTION_URL = '/.netlify/functions/upload';
+
+      const form = document.getElementById('yellow-camera-upload-form');
+      const statusEl = document.getElementById('upload-status');
+      const submitBtn = document.getElementById('uploadSubmitBtn');
+
+      if (form && FUNCTION_URL) {
+        form.addEventListener('submit', async function (e) {
+          e.preventDefault();
+
+          if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+          }
+
+          statusEl.textContent = 'Uploading your clip… please keep this page open.';
+          statusEl.classList.remove('error', 'success');
+          statusEl.classList.add('pending');
+
+          submitBtn.disabled = true;
+
+          try {
+            const formData = new FormData(form);
+
+            const res = await fetch(FUNCTION_URL, {
+              method: 'POST',
+              body: formData
+            });
+
+            const data = await res.json().catch(() => null);
+
+            if (!res.ok || !data || data.ok === false) {
+              const msg =
+                (data && data.error) ||
+                ('Upload failed with status ' + res.status);
+              throw new Error(msg);
+            }
+
+            form.reset();
+            statusEl.textContent =
+              data.message ||
+              'Thank you! Your Yellow Camera clip has been uploaded. You can now pass the camera on.';
+            statusEl.classList.remove('pending');
+            statusEl.classList.add('success');
+          } catch (err) {
+            console.error('Upload failed:', err);
+            statusEl.textContent =
+              'Something went wrong uploading your clip. Please check your connection and try again. If it keeps failing, email theyellowcameraproject@gmail.com and we’ll help.';
+            statusEl.classList.remove('pending');
+            statusEl.classList.add('error');
+          } finally {
+            submitBtn.disabled = false;
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
