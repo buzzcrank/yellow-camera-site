@@ -292,139 +292,101 @@
     <p>&copy; <span id="year"></span> The Yellow Camera Project. All rights reserved.</p>
   </footer>
 
-  <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    // ----- Footer year -----
-    const yearEl = document.getElementById('year');
-    if (yearEl) {
-      yearEl.textContent = new Date().getFullYear();
-    }
+      <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
 
-    // ----- Intro / how-to videos -----
-    const introVideo = document.getElementById('yellowIntroVideo');
-    const howVideo   = document.getElementById('yellowHowVideo');
-    const introBtn   = document.getElementById('introPlayBtn');
-    const howBtn     = document.getElementById('howPlayBtn');
+    document.addEventListener('DOMContentLoaded', function () {
+      var introVideo = document.getElementById('yellowIntroVideo');
+      var howVideo   = document.getElementById('yellowHowVideo');
+      var introBtn   = document.getElementById('introPlayBtn');
+      var howBtn     = document.getElementById('howPlayBtn');
 
-    if (introVideo) {
-      introVideo.preload = 'auto';
-      introVideo.volume = 0.5;
-
-      // When intro starts, begin preloading the how-to video
-      introVideo.addEventListener('play', function () {
-        if (howVideo) {
-          howVideo.preload = 'auto';
-          try { howVideo.load(); } catch (e) {}
-        }
-      });
-    }
-
-    if (introVideo && introBtn) {
-      introBtn.addEventListener('click', function () {
+      if (introVideo) {
+        introVideo.preload = 'auto';
         introVideo.volume = 0.5;
-        introVideo.play().catch(function (err) {
-          console.error('Intro video play failed:', err);
+
+        introVideo.addEventListener('play', function () {
+          if (howVideo) {
+            howVideo.preload = 'auto';
+            try { howVideo.load(); } catch (e) {}
+          }
         });
-      });
-    }
-
-    if (howVideo && howBtn) {
-      howBtn.addEventListener('click', function () {
-        howVideo.volume = 0.5;
-        howVideo.play().catch(function (err) {
-          console.error('How-to video play failed:', err);
-        });
-      });
-    }
-
-    // ----- Upload form -> Vultr uploader -----
-    const UPLOAD_URL = 'https://upload.theyellowcameraproject.com/upload';
-
-    const form      = document.getElementById('yellow-camera-upload-form');
-    const statusEl  = document.getElementById('upload-status');
-    const submitBtn = document.getElementById('uploadSubmitBtn');
-
-    if (!form || !statusEl || !submitBtn) return;
-
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      // HTML5 validation
-      if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
       }
 
-      const fileInput = document.getElementById('files');
-      if (!fileInput || !fileInput.files || !fileInput.files.length) {
-        alert('Please choose at least one video file from the Yellow Camera.');
-        return;
+      if (introVideo && introBtn) {
+        introBtn.addEventListener('click', function () {
+          introVideo.volume = 0.5;
+          introVideo.play().catch(function (err) {
+            console.error('Intro video play failed:', err);
+          });
+        });
       }
 
-      // Initial status
-      statusEl.textContent =
-        'Uploading your clip… this can take several minutes for big videos. Please keep this page open.';
-      statusEl.className = 'upload-status pending';
-      submitBtn.disabled = true;
+      if (howVideo && howBtn) {
+        howBtn.addEventListener('click', function () {
+          howVideo.volume = 0.5;
+          howVideo.play().catch(function (err) {
+            console.error('How-to video play failed:', err);
+          });
+        });
+      }
 
-      const formData = new FormData(form);
+      // ---------- Upload form -> YCP uploader on Vultr ----------
+      const UPLOAD_URL = 'https://upload.theyellowcameraproject.com/upload';
 
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', UPLOAD_URL, true);
+      const form = document.getElementById('yellow-camera-upload-form');
+      const statusEl = document.getElementById('upload-status');
+      const submitBtn = document.getElementById('uploadSubmitBtn');
 
-      // Progress feedback
-      xhr.upload.onprogress = function (event) {
-        if (event.lengthComputable) {
-          const percent = Math.round((event.loaded / event.total) * 100);
-          statusEl.textContent = 'Uploading… ' + percent + '%';
-        } else {
-          statusEl.textContent = 'Uploading your clip…';
-        }
-      };
+      if (form && UPLOAD_URL) {
+        form.addEventListener('submit', async function (e) {
+          e.preventDefault();
 
-      // Final response handler
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState !== XMLHttpRequest.DONE) return;
-
-        submitBtn.disabled = false;
-
-        if (xhr.status >= 200 && xhr.status < 300) {
-          let ok = true;
-          try {
-            const resJson = JSON.parse(xhr.responseText || '{}');
-            if (resJson && resJson.ok === false) ok = false;
-          } catch (e) {
-            // If we can't parse JSON but got a 2xx, assume success.
+          if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
           }
 
-          if (ok) {
+          statusEl.textContent = 'Uploading your clip… please keep this page open.';
+          statusEl.classList.remove('error', 'success');
+          statusEl.classList.add('pending');
+
+          submitBtn.disabled = true;
+
+          try {
+            const formData = new FormData(form);
+
+            const res = await fetch(UPLOAD_URL, {
+              method: 'POST',
+              body: formData,
+            });
+
+            if (!res.ok) {
+              throw new Error('Non-200 response: ' + res.status);
+            }
+
+            const json = await res.json().catch(() => ({}));
+            console.log('Uploader response:', json);
+
             form.reset();
             statusEl.textContent =
               'Thank you! Your Yellow Camera clip has been uploaded. You can now pass the camera on.';
-            statusEl.className = 'upload-status success';
-
-            // Optional: redirect to a dedicated thank-you page later
-            // window.location.href = '/thanks.html';
-            return;
+            statusEl.classList.remove('pending');
+            statusEl.classList.add('success');
+          } catch (err) {
+            console.error('Upload failed:', err);
+            statusEl.textContent =
+              'Something went wrong uploading your clip. Please check your connection and try again. If it keeps failing, email theyellowcameraproject@gmail.com and we’ll help.';
+            statusEl.classList.remove('pending');
+            statusEl.classList.add('error');
+          } finally {
+            submitBtn.disabled = false;
           }
-        }
-
-        statusEl.textContent =
-          'Something went wrong uploading your clip. Please try again. If it keeps failing, email theyellowcameraproject@gmail.com and tell us what happened.';
-        statusEl.className = 'upload-status error';
-      };
-
-      xhr.onerror = function () {
-        submitBtn.disabled = false;
-        statusEl.textContent =
-          'Network error while uploading your clip. Please check your connection and try again.';
-        statusEl.className = 'upload-status error';
-      };
-
-      xhr.send(formData);
+        });
+      }
     });
-  });
-</script>
+  </script>
 </body>
 </html>
+
 
